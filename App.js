@@ -1,84 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import { View, Image, Text, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Linking } from 'react-native';
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import Video from './Video'; // Import the Video component
+const Stack = createStackNavigator();
 
-const videoData = [
-  {
-    id: 'fWo76y3Fvns',
-    thumbnail: `https://i.ytimg.com/vi/fWo76y3Fvns/default.jpg`,
-  },
-  {
-    id: 'GcQ0ouHpETY',
-    thumbnail: `https://i.ytimg.com/vi/GcQ0ouHpETY/default.jpg`,
-  },
-  {
-    id: 'on2HNaZ7Zec',
-    thumbnail: `https://i.ytimg.com/vi/on2HNaZ7Zec/default.jpg`,
-  },
-  {
-    id: 'on2HNaZ7Zec',
-    thumbnail: `https://i.ytimg.com/vi/on2HNaZ7Zec/default.jpg`,
-  },
-  {
-    id: 'on2HNaZ7Zec',
-    thumbnail: `https://i.ytimg.com/vi/on2HNaZ7Zec/default.jpg`,
-  },
-  {
-    id: 'on2HNaZ7Zec',
-    thumbnail: `https://i.ytimg.com/vi/on2HNaZ7Zec/default.jpg`,
-  },
-  {
-    id: 'on2HNaZ7Zec',
-    thumbnail: `https://i.ytimg.com/vi/on2HNaZ7Zec/default.jpg`,
-  },
-  {
-    id: 'on2HNaZ7Zec',
-    thumbnail: `https://i.ytimg.com/vi/on2HNaZ7Zec/default.jpg`,
-  },
-];
-
-const App = () => {
-  const [videoTitles, setVideoTitles] = useState({});
-
-  useEffect(() => {
-    const getYoutubeVideoInfo = async () => {
-      for (const video of videoData) {
-        const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${video.id}`);
-        const data = await response.json();
-        setVideoTitles((prevTitles) => ({ ...prevTitles, [video.id]: data.title }));
-      }
-    };
-    getYoutubeVideoInfo();
-  }, []);
-
-  const handleVideoPress = (videoId) => {
-    const url = `https://www.youtube.com/watch?v=${videoId}`;
-    Linking.canOpenURL(url).then((supported) => {
-      if (supported) {
-        Linking.openURL(url);
-      } else {
-        console.log(`Don't know how to open URI: ${url}`);
-      }
-    });
-  };
-
+const Header = () => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#fff' }}>
-        <Text style={{ fontSize: 13, fontWeight: 'bold' }}>Trinitas Open</Text>
-      </View>
-      <ScrollView style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
-        {videoData.map((video, index) => (
-          <TouchableOpacity key={index} onPress={() => handleVideoPress(video.id)}>
-            <View style={{ marginBottom: 15, flexDirection: 'row', alignItems: 'center' }}>
-              <Image source={{ uri: video.thumbnail }} style={{ width: 100, height: 100, borderRadius: 8 }} />
-              <Text style={{ fontSize: 8, fontWeight: 'bold', marginLeft: 16 }}>{videoTitles[video.id]}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.header}>
+      <Image
+        source={require('./assets/triop2023.png')}
+        style={styles.headerImage}
+      />
+    </View>
   );
 };
 
-export default App;
+const Menu = ({ navigation }) => {
+  return (
+    <View style={styles.menuContainer}>
+      <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Video')}>
+        <Text style={styles.menuText}>Video</Text>
+      </TouchableOpacity>
+      {/* Tambahkan menu lainnya di sini */}
+    </View>
+  );
+};
+
+const App = ({ navigation }) => {
+  return (
+    <View style={styles.container}>
+      <Header />
+      <View style={styles.content}>
+        <Menu navigation={navigation} />
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    width: '100%',
+    height: 200,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  menuContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  menuItem: {
+    width: 100,
+    height: 100,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    margin: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+
+
+const AppNavigator = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Triop Mobile" component={App} />
+        <Stack.Screen name="Video" component={Video} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default AppNavigator;
